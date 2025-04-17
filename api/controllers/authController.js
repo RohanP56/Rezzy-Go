@@ -1,5 +1,8 @@
+import "dotenv/config";
 import User from "../models/userModel.js";
+import { createError } from "../utils/error.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res, next) => {
   try {
@@ -20,16 +23,29 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const userEmail = await User.findOne({email: req.body.email})
-    if(!userEmail){
-      return next(createError(404, "Email not found!"))  
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return next(createError(404, "Email not found!"));
     }
-    const isPasswordCorrect = await bcrypt.compare(req.body.password, userEmail.password);
-    if(!isPasswordCorrect){
-        return next(createError(400, "Wrong password or username"))  
+    const isPasswordCorrect = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+    if (!isPasswordCorrect) {
+      return next(createError(400, "Wrong password or email"));
     }
-    const {password, isAdmin, ...otherDetails} = userEmail._doc;
-    res.status(201).json({...otherDetails});
+    //if password is correct, we will crate new token
+    const token = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.SECRET_KEY
+    );
+    const { password, isAdmin, ...otherDetails } = user._doc;
+    res
+      .cookie("access_token", token, {
+        httpOnly: true, // does not allow any client to reach this cookie
+      })
+      .status(201)
+      .json({ ...otherDetails });
   } catch (error) {
     next(error);
   }

@@ -1,4 +1,5 @@
 import express from "express";
+const router = express.Router();
 import Hotel from "../models/hotelModel.js";
 import {
   createHotel,
@@ -7,17 +8,18 @@ import {
   getHotel,
   getHotels,
 } from "../controllers/hotelsController.js";
+import { verifyAdmin } from "../utils/verifyToken.js";
 
-const router = express.Router();
+// To create, update and delete hotl you have to be an Admin
 
 //CREATE
-router.post("/", createHotel);
+router.post("/", verifyAdmin, createHotel);
 
 //UPDATE
-router.put("/:id", updateHotel);
+router.put("/:id", verifyAdmin, updateHotel);
 
 //DELETE
-router.delete("/:id", deleteHotel);
+router.delete("/:id", verifyAdmin, deleteHotel);
 
 //GET
 router.get("/:id", getHotel);

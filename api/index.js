@@ -5,6 +5,9 @@ import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/usersRoute.js";
 import hotelRoute from "./routes/hotelsRoute.js";
 import roomRoute from "./routes/roomsRoute.js";
+import cookieParser  from 'cookie-parser';
+
+
 const app = express();
 const port = process.env.PORT || 5008;
 
@@ -26,6 +29,7 @@ mongoose.connection.on("disconnected", () => {
 })*/
 
 //middlewares
+app.use(cookieParser())
 app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
