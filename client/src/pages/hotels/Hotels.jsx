@@ -1,7 +1,15 @@
+import Navbar from "../../components/navbar/Navbar.jsx"
+import Header from "../../components/header/Header.jsx"
+import Search from "../../components/search/Search.jsx"
+
+
+
 function Hotels() {
   return (
     <div>
-      <h1>All hotel listed here</h1>
+      <Navbar></Navbar>
+      <Header></Header>
+      <Search></Search>
     </div>
   )
 }
